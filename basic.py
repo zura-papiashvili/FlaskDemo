@@ -3,8 +3,15 @@ import string
 from nltk.tokenize import word_tokenize
 from nltk.probability import FreqDist
 from nltk.corpus import stopwords
+from datetime import datetime
+import matplotlib
+import os
+import glob
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+
 from nltk.stem.wordnet import WordNetLemmatizer
+import shutil
 
 
 lem = WordNetLemmatizer()
@@ -34,14 +41,18 @@ def report():
 
     clean_text = text_process(raw_text)
     word_freq = FreqDist(clean_text)
-    plt.ion()
     word_freq.plot(10, title='Top 10 Most common Words in Text')
-    plt.savefig('static/images/plot.png')
-    plt.ioff()
+    now = datetime.now()
+    plot_name=now.strftime("%d-%m-%Y-%H-%M-%S")+'.png'
+    path='static/images/'
 
+    files = glob.glob(path+'*')
+    for items in files:
+        os.remove(items)
+    plt.savefig(path+plot_name)
+    plt.close()
 
-
-    return render_template('report.html', name='frequency distribution plot', url='static/images/plot.png')
+    return render_template('report.html', name='frequency distribution plot', url=path+plot_name)
 
 
 if __name__ == '__main__':
